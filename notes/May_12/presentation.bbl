@@ -1,0 +1,20 @@
+\begin{thebibliography}{}
+
+\bibitem[Abu-Affash et~al., 2023]{article:geometric_spanning_trees_minimizing_wiener_index}
+Abu-Affash, A.~K., Carmi, P., Luwisch, O., and Mitchell, J. S.~B. (2023).
+\newblock Geometric spanning trees minimizing the wiener index.
+
+\bibitem[Akpanya et~al., 2024]{article:inside_out_dissections_polygons_polyhedra}
+Akpanya, R., Rivkin, A., and Stock, F. (2024).
+\newblock On inside-out dissections of polygons and polyhedra.
+
+\bibitem[Demaine and Rudoy, 2018]{article:spanning_tree_k_uniform_2_regular_hypergraph}
+Demaine, E.~D. and Rudoy, M. (2018).
+\newblock Tree-residue vertex-breaking: a new tool for proving hardness.
+
+\bibitem[Goodall and {de Mier}, 2011]{article:spanning_tree_3_uniform_hypergraph}
+Goodall, A. and {de Mier}, A. (2011).
+\newblock Spanning trees of 3-uniform hypergraphs.
+\newblock {\em Advances in Applied Mathematics}, 47(4):840--868.
+
+\end{thebibliography}

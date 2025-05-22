@@ -1,0 +1,2 @@
+\beamer@sectionintoc {1}{Geometric Spanning Trees and Hypergraphs that Minimizes the Wiener Index}{3}{0}{1}
+\beamer@sectionintoc {2}{Inside-Out Dissection}{31}{0}{2}
