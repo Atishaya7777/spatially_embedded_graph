@@ -1,0 +1,44 @@
+Can you refactor this code to make it modular and class based?
+
+Specifically the functions compare_algorithms, test_divide_conquer_wiener, and comprehensive_test? In the future, I might want to compare two different types of algorithms in general so make it as general as possible.
+
+Here is my folder directory:
+
+├── __init__.py
+├── analysis
+│   ├── __init__.py
+│   ├── comparison_analyzer.py
+│   └── statistical_analyzer.py
+├── convex_wiener_plots
+│   ├── convex_wiener_best_trial_0_seed_0.png
+│   ├── convex_wiener_best_trial_0_seed_10.png
+│   ├── convex_wiener_worst_trial_0_seed_0.png
+│   └── convex_wiener_worst_trial_0_seed_10.png
+├── core
+│   ├── __init__.py
+│   ├── point.py
+│   └── wiener_index_calculator.py
+├── generators
+│   ├── __init__.py
+│   └── point_generator.py
+├── hamiltonian_wiener.py
+├── multithreaded_hamiltonian_general.py
+├── requirements.txt
+├── solvers
+│   ├── __init__.py
+│   ├── brute_force_solver.py
+│   └── divide_conquer_solver.py
+├── summary.py
+├── test.txt
+├── utils
+│   ├── __init__.py
+│   ├── data_manager.py
+│   └── logger_setup.py
+├── venv
+├── visualization
+│   ├── __init__.py
+│   └── visualizer.py
+└── wiener_summary_stats_4.txt
+main.py
+
+I want you to write the class file for comparison_analyzer.py
