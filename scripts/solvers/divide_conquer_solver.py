@@ -41,6 +41,21 @@ class DivideConquerSolver:
         else:
             return self._solve_bbox(points, depth=0)
 
+    def solve_with_wiener(self, points: List[Point], use_median_bisection: bool = False) -> Tuple[List[Point], float]:
+        """
+        Solve using divide and conquer approach and return path with Wiener index.
+
+        Args:
+            points: List of points to find path for
+            use_median_bisection: Whether to use median-based bisection
+
+        Returns:
+            Tuple of (Hamiltonian path, Wiener index)
+        """
+        path = self.solve(points, use_median_bisection)
+        wiener_index = WienerIndexCalculator.calculate_wiener_index(path)
+        return path, wiener_index
+
     def _solve_bbox(self, points: List[Point], depth: int = 0) -> List[Point]:
         """
         Divide and conquer using bounding box bisection.

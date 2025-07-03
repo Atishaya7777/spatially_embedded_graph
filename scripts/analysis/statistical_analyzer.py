@@ -1,20 +1,92 @@
 import numpy as np
 import time
 import logging
-from typing import List, Dict, Tuple, Optional
-from dataclasses import dataclass
+from typing import List, Dict, Tuple, Optional, Any, Union
+from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 
 from core.point import Point
 from core.wiener_index_calculator import WienerIndexCalculator
-from generators.point_generator import PointGenerator
-from solvers.brute_force_solver import BruteForceSolver
-from solvers.divide_conquer_solver import DivideConquerSolver
 
 
 @dataclass
+class AlgorithmResult:
+    """Container for single algorithm result."""
+    algorithm_name: str
+    path: List[Point]
+    wiener_index: float
+    execution_time: float
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            'algorithm_name': self.algorithm_name,
+            'path': [p.to_dict() for p in self.path],
+            'wiener_index': self.wiener_index,
+            'execution_time': self.execution_time
+        }
+
+
+@dataclass
+class MultiAlgorithmExperiment:
+    """Container for multi-algorithm experiment results."""
+    n_points: int
+    seed: int
+    points: List[Point]
+    results: Dict[str, AlgorithmResult] = field(default_factory=dict)
+    
+    def add_result(self, algorithm_name: str, result: AlgorithmResult) -> None:
+        """Add result for an algorithm."""
+        self.results[algorithm_name] = result
+    
+    def get_approximation_ratio(self, algorithm1: str, algorithm2: str) -> Optional[float]:
+        """Calculate approximation ratio between two algorithms."""
+        if algorithm1 in self.results and algorithm2 in self.results:
+            wiener1 = self.results[algorithm1].wiener_index
+            wiener2 = self.results[algorithm2].wiener_index
+            return wiener1 / wiener2 if wiener2 > 0 else None
+        return None
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            'n_points': self.n_points,
+            'seed': self.seed,
+            'points': [p.to_dict() for p in self.points],
+            'results': {name: result.to_dict() for name, result in self.results.items()}
+        }
+
+
+@dataclass
+class AlgorithmStatistics:
+    """Statistical summary for a single algorithm."""
+    algorithm_name: str
+    num_experiments: int
+    wiener_index_mean: float
+    wiener_index_std: float
+    wiener_index_min: float
+    wiener_index_max: float
+    execution_time_mean: float
+    execution_time_std: float
+    execution_time_min: float
+    execution_time_max: float
+
+
+@dataclass
+class StudyResults:
+    """Container for comprehensive study results."""
+    experiments: List[MultiAlgorithmExperiment]
+    statistics: Dict[str, AlgorithmStatistics]
+    
+    def get_experiments_with_algorithm(self, algorithm_name: str) -> List[MultiAlgorithmExperiment]:
+        """Get all experiments that include results for the specified algorithm."""
+        return [exp for exp in self.experiments if algorithm_name in exp.results]
+
+
+# Legacy data classes for backward compatibility
+@dataclass
 class ExperimentResult:
-    """Container for single experiment results."""
+    """Container for single experiment results (legacy)."""
     n_points: int
     seed: int
     points: List[Point]
@@ -29,7 +101,7 @@ class ExperimentResult:
 
 @dataclass
 class StatisticalSummary:
-    """Container for statistical summary of multiple experiments."""
+    """Container for statistical summary of multiple experiments (legacy)."""
     n_points: int
     num_experiments: int
     dc_wiener_mean: float
@@ -58,15 +130,142 @@ class StatisticalAnalyzer:
         self.use_parallel = use_parallel
         self.max_workers = max_workers or min(cpu_count(), 8)
         self.logger = logging.getLogger(__name__)
-
-        # Initialize components
-        self.point_generator = PointGenerator()
         self.wiener_calculator = WienerIndexCalculator()
-        self.brute_force_solver = BruteForceSolver(
-            use_parallel=use_parallel, max_workers=self.max_workers)
-        self.dc_solver = DivideConquerSolver()
 
-    def run_single_experiment(self, n_points: int, seed: int, is_convex: bool = False) -> ExperimentResult:
+    def run_single_experiment(self, points: List[Point], solver, 
+                             algorithm_name: str = "unknown",
+                             solver_kwargs: Optional[Dict[str, Any]] = None) -> AlgorithmResult:
+        """Run a single algorithm on a point set."""
+        solver_kwargs = solver_kwargs or {}
+        
+        start_time = time.time()
+        path = solver.solve(points, **solver_kwargs)
+        execution_time = time.time() - start_time
+        
+        wiener_index = self.wiener_calculator.calculate_wiener_index(path)
+        
+        return AlgorithmResult(
+            algorithm_name=algorithm_name,
+            path=path,
+            wiener_index=wiener_index,
+            execution_time=execution_time
+        )
+    
+    def run_multi_algorithm_experiment(self, points: List[Point], 
+                                     solvers: List[Any],
+                                     solver_names: List[str],
+                                     solver_kwargs_list: Optional[List[Dict[str, Any]]] = None,
+                                     seed: Optional[int] = None) -> MultiAlgorithmExperiment:
+        """Run multiple algorithms on the same point set."""
+        if solver_kwargs_list is None:
+            solver_kwargs_list = [{} for _ in solvers]
+        
+        experiment = MultiAlgorithmExperiment(
+            n_points=len(points),
+            seed=seed or 0,
+            points=points
+        )
+        
+        for solver, name, kwargs in zip(solvers, solver_names, solver_kwargs_list):
+            try:
+                result = self.run_single_experiment(points, solver, name, kwargs)
+                experiment.add_result(name, result)
+                self.logger.debug(f"Algorithm {name}: Wiener={result.wiener_index:.4f}, Time={result.execution_time:.4f}s")
+            except Exception as e:
+                self.logger.warning(f"Algorithm {name} failed: {str(e)}")
+        
+        return experiment
+    
+    def run_comparison_study(self, point_sets: List[List[Point]],
+                           solvers: List[Any],
+                           solver_names: List[str],
+                           solver_kwargs_list: Optional[List[Dict[str, Any]]] = None) -> StudyResults:
+        """Run comparison study across multiple point sets."""
+        experiments = []
+        
+        for i, points in enumerate(point_sets):
+            experiment = self.run_multi_algorithm_experiment(
+                points, solvers, solver_names, solver_kwargs_list, seed=i
+            )
+            experiments.append(experiment)
+            
+            if (i + 1) % 20 == 0:
+                self.logger.info(f"Completed {i + 1}/{len(point_sets)} experiments...")
+        
+        # Calculate statistics
+        statistics = self._calculate_statistics(experiments, solver_names)
+        
+        return StudyResults(experiments=experiments, statistics=statistics)
+    
+    def run_comprehensive_study(self, point_sets: List[List[Point]],
+                              solvers: List[Any],
+                              solver_names: List[str],
+                              max_brute_force_size: int = 10) -> StudyResults:
+        """Run comprehensive study with conditional brute force."""
+        experiments = []
+        
+        for i, points in enumerate(point_sets):
+            # Determine which solvers to use based on point set size
+            active_solvers = []
+            active_names = []
+            active_kwargs = []
+            
+            for solver, name in zip(solvers, solver_names):
+                if name == 'brute_force' and len(points) > max_brute_force_size:
+                    continue  # Skip brute force for large point sets
+                active_solvers.append(solver)
+                active_names.append(name)
+                active_kwargs.append({})
+            
+            experiment = self.run_multi_algorithm_experiment(
+                points, active_solvers, active_names, active_kwargs, seed=i
+            )
+            experiments.append(experiment)
+            
+            if (i + 1) % 20 == 0:
+                self.logger.info(f"Completed {i + 1}/{len(point_sets)} experiments...")
+        
+        # Calculate statistics
+        statistics = self._calculate_statistics(experiments, solver_names)
+        
+        return StudyResults(experiments=experiments, statistics=statistics)
+    
+    def _calculate_statistics(self, experiments: List[MultiAlgorithmExperiment], 
+                            algorithm_names: List[str]) -> Dict[str, AlgorithmStatistics]:
+        """Calculate statistics for each algorithm."""
+        statistics = {}
+        
+        for algorithm_name in algorithm_names:
+            # Get all results for this algorithm
+            results = []
+            for exp in experiments:
+                if algorithm_name in exp.results:
+                    results.append(exp.results[algorithm_name])
+            
+            if not results:
+                continue
+            
+            # Calculate statistics
+            wiener_indices = [r.wiener_index for r in results]
+            execution_times = [r.execution_time for r in results]
+            
+            statistics[algorithm_name] = AlgorithmStatistics(
+                algorithm_name=algorithm_name,
+                num_experiments=len(results),
+                wiener_index_mean=np.mean(wiener_indices),
+                wiener_index_std=np.std(wiener_indices),
+                wiener_index_min=np.min(wiener_indices),
+                wiener_index_max=np.max(wiener_indices),
+                execution_time_mean=np.mean(execution_times),
+                execution_time_std=np.std(execution_times),
+                execution_time_min=np.min(execution_times),
+                execution_time_max=np.max(execution_times)
+            )
+        
+        return statistics
+
+    # Legacy methods for backward compatibility
+    def run_single_experiment_legacy(self, n_points: int, seed: int, is_convex: bool = False) -> ExperimentResult:
         """Run a single experiment comparing algorithms."""
         # Generate points
         if is_convex:
@@ -285,3 +484,28 @@ class StatisticalAnalyzer:
             self.logger.info(f"  D&C Time: {stats.dc_time_mean:.4f}s")
 
         return all_results
+
+    def analyze_multi_algorithm_study(self, experiments: List[MultiAlgorithmExperiment]) -> StudyResults:
+        """
+        Analyze results from a multi-algorithm study and generate comprehensive statistics.
+        
+        Args:
+            experiments: List of MultiAlgorithmExperiment objects
+            
+        Returns:
+            StudyResults with comprehensive analysis
+        """
+        if not experiments:
+            raise ValueError("No experiments provided for analysis")
+        
+        # Get all algorithm names from experiments
+        all_algorithms = set()
+        for exp in experiments:
+            all_algorithms.update(exp.results.keys())
+        
+        algorithm_names = list(all_algorithms)
+        
+        # Calculate statistics using existing method
+        statistics = self._calculate_statistics(experiments, algorithm_names)
+        
+        return StudyResults(experiments=experiments, statistics=statistics)

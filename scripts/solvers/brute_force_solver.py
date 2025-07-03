@@ -140,3 +140,19 @@ class BruteForceSolver:
                 best_path = path
 
         return best_path, best_wiener
+
+    def solve_simple(self, points: List[Point], use_parallel: bool = True, 
+                    max_workers: Optional[int] = None) -> List[Point]:
+        """
+        Find optimal Hamiltonian path by brute force - simplified interface.
+
+        Args:
+            points: List of points to find optimal path for
+            use_parallel: Whether to use parallel processing for larger point sets
+            max_workers: Maximum number of workers (ignored, uses instance setting)
+
+        Returns:
+            Optimal path as list of points
+        """
+        optimal_path, _ = self.solve(points, use_parallel)
+        return optimal_path

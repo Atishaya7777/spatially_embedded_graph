@@ -1,4 +1,4 @@
-# Makefile for Wiener Index Analysis Project
+# Makefile for Wiener Index Analysis - Standalone Implementation
 
 # Variables
 VENV_DIR = venv
@@ -6,8 +6,6 @@ PYTHON = $(VENV_DIR)/bin/python
 PIP = $(VENV_DIR)/bin/pip
 REQUIREMENTS = requirements.txt
 MAIN_SCRIPT = main.py
-SUMMARY_SCRIPT = summary.py
-HAMILTONIAN_SCRIPT = hamiltonian_wiener.py
 
 # Default target
 .PHONY: all
@@ -24,36 +22,23 @@ $(VENV_DIR)/bin/activate: $(REQUIREMENTS)
 	$(PIP) install -r $(REQUIREMENTS)
 	@echo "Virtual environment setup complete!"
 
+# Quick test run with minimal parameters
+.PHONY: test
+test: setup
+	@echo "Running quick test..."
+	$(PYTHON) $(MAIN_SCRIPT) --quick-test
+
+# Run the standalone Wiener index analysis
+.PHONY: run
+run: setup
+	@echo "Running Wiener index analysis..."
+	$(PYTHON) $(MAIN_SCRIPT)
+
 # Install/update requirements
 .PHONY: install
 install: $(VENV_DIR)/bin/activate
 	@echo "Installing/updating requirements..."
 	$(PIP) install -r $(REQUIREMENTS)
-
-# Run the main analysis
-.PHONY: run
-run: setup
-	@echo "Running main analysis..."
-	$(PYTHON) $(HAMILTONIAN_SCRIPT)
-
-# Run the summary script
-.PHONY: summary
-summary: setup
-	@echo "Running summary analysis..."
-	$(PYTHON) $(SUMMARY_SCRIPT)
-
-# Run the hamiltonian analysis
-.PHONY: hamiltonian
-hamiltonian: setup
-	@echo "Running hamiltonian analysis..."
-	$(PYTHON) $(HAMILTONIAN_SCRIPT)
-
-# Run multithreaded version
-.PHONY: multithread
-multithread: setup
-	@echo "Running multithreaded analysis..."
-	$(PYTHON) multithreaded_hamiltonian_general.py
-
 
 # Clean up generated files
 .PHONY: clean
@@ -63,11 +48,9 @@ clean:
 	rm -rf */__pycache__/
 	rm -rf */*/__pycache__/
 	rm -f *.pyc
-	rm -f */*.pyc
-	rm -f */*/*.pyc
 	rm -f *.log
-	rm -f wiener_*.txt
-	rm -f quick_test_results.json
+	rm -rf wiener_results/
+	rm -rf wiener_logs/
 	@echo "Cleanup complete!"
 
 # Clean everything including virtual environment
@@ -77,111 +60,57 @@ clean-all: clean
 	rm -rf $(VENV_DIR)
 	@echo "Full cleanup complete!"
 
-# Reinstall everything from scratch
-.PHONY: reinstall
-reinstall: clean-all setup
-	@echo "Reinstallation complete!"
+# Run analysis with custom parameters
+.PHONY: custom
+custom: setup
+	@echo "Running custom analysis..."
+	@echo "Usage: make custom ARGS='--point-counts 4 5 6 --trials 3'"
+	$(PYTHON) $(MAIN_SCRIPT) $(ARGS)
 
-# Create requirements.txt if it doesn't exist
-.PHONY: create-requirements
-create-requirements:
-	@if [ ! -f $(REQUIREMENTS) ]; then \
-		echo "Creating requirements.txt..."; \
-		echo "numpy>=1.21.0" > $(REQUIREMENTS); \
-		echo "matplotlib>=3.5.0" >> $(REQUIREMENTS); \
-		echo "scipy>=1.7.0" >> $(REQUIREMENTS); \
-		echo "tqdm>=4.62.0" >> $(REQUIREMENTS); \
-		echo "pandas>=1.3.0" >> $(REQUIREMENTS); \
-		echo "seaborn>=0.11.0" >> $(REQUIREMENTS); \
-		echo "plotly>=5.0.0" >> $(REQUIREMENTS); \
-		echo "Requirements.txt created with basic dependencies!"; \
+# Show project info
+.PHONY: info
+info:
+	@echo "Project Information:"
+	@echo "==================="
+	@echo "Working Directory: $(PWD)"
+	@echo "Main Script: $(MAIN_SCRIPT)"
+	@echo "Virtual Environment: $(VENV_DIR)"
+	@if [ -f $(VENV_DIR)/bin/python ]; then \
+		echo "Python Version: $$($(PYTHON) --version)"; \
+		echo "Virtual environment is set up."; \
 	else \
-		echo "Requirements.txt already exists."; \
+		echo "Virtual environment not found. Run 'make setup' first."; \
 	fi
 
 # Show help
 .PHONY: help
 help:
-	@echo "Available targets:"
-	@echo "  all           - Setup environment and run main analysis"
+	@echo "Available targets for Wiener Index Analysis (Standalone Implementation):"
+	@echo "=========================================================================="
+	@echo "  all           - Setup environment and run analysis"
 	@echo "  setup         - Create virtual environment and install dependencies"
 	@echo "  install       - Install/update requirements in existing venv"
-	@echo "  run           - Run main analysis (main.py)"
-	@echo "  summary       - Run summary analysis (summary.py)"
-	@echo "  hamiltonian   - Run hamiltonian analysis (hamiltonian_wiener.py)"
-	@echo "  multithread   - Run multithreaded analysis"
-	@echo "  test          - Run quick test to verify setup"
-	@echo "  clean         - Remove generated files and cache"
+	@echo "  run           - Run the complete Wiener index analysis"
+	@echo "  test          - Run quick test with minimal parameters"
+	@echo "  custom        - Run with custom parameters (use ARGS='...')"
+	@echo "  clean         - Remove generated files and results"
 	@echo "  clean-all     - Remove everything including virtual environment"
-	@echo "  reinstall     - Clean everything and reinstall from scratch"
-	@echo "  create-requirements - Create basic requirements.txt if missing"
+	@echo "  info          - Show project information"
 	@echo "  help          - Show this help message"
-
-# Advanced targets for development
-
-# Interactive Python shell with environment loaded
-.PHONY: shell
-shell: setup
-	@echo "Starting Python shell with virtual environment..."
-	$(PYTHON)
-
-# Install development dependencies
-.PHONY: dev-install
-dev-install: setup
-	@echo "Installing development dependencies..."
-	$(PIP) install ipython jupyter black flake8 pytest
-	@echo "Development dependencies installed!"
-
-# Format code with black
-.PHONY: format
-format: setup
-	@echo "Formatting code with black..."
-	$(PYTHON) -m black . --exclude $(VENV_DIR)
-
-# Lint code with flake8
-.PHONY: lint
-lint: setup
-	@echo "Linting code with flake8..."
-	$(PYTHON) -m flake8 . --exclude $(VENV_DIR) --max-line-length=88
-
-# Run Jupyter notebook
-.PHONY: notebook
-notebook: dev-install
-	@echo "Starting Jupyter notebook..."
-	$(VENV_DIR)/bin/jupyter notebook
-
-# Show virtual environment info
-.PHONY: info
-info:
-	@echo "Project Information:"
-	@echo "==================="
-	@echo "Virtual Environment: $(VENV_DIR)"
-	@if [ -f $(VENV_DIR)/bin/python ]; then \
-		echo "Python Version: $$($(PYTHON) --version)"; \
-		echo "Pip Version: $$($(PIP) --version)"; \
-		echo "Installed Packages:"; \
-		$(PIP) list; \
-	else \
-		echo "Virtual environment not found. Run 'make setup' first."; \
-	fi
-
-# Export current environment to requirements.txt
-.PHONY: freeze
-freeze: setup
-	@echo "Exporting current environment to requirements.txt..."
-	$(PIP) freeze > $(REQUIREMENTS)
-	@echo "Requirements exported to $(REQUIREMENTS)"
-
-# Backup important files
-.PHONY: backup
-backup:
-	@echo "Creating backup..."
-	@mkdir -p backups
-	@tar -czf backups/backup_$$(date +%Y%m%d_%H%M%S).tar.gz \
-		--exclude=venv \
-		--exclude=__pycache__ \
-		--exclude=*.pyc \
-		--exclude=*.log \
-		--exclude=backups \
-		.
-	@echo "Backup created in backups/ directory"
+	@echo ""
+	@echo "Quick Start:"
+	@echo "  make setup    # Set up the environment"
+	@echo "  make test     # Quick test run"
+	@echo "  make run      # Complete analysis"
+	@echo ""
+	@echo "Custom Usage Examples:"
+	@echo "  make custom ARGS='--quick-test'"
+	@echo "  make custom ARGS='--point-counts 4 5 6 --trials 3'"
+	@echo "  make custom ARGS='--output-dir my_results'"
+	@echo ""
+	@echo "Features of the standalone implementation:"
+	@echo "  • Point generation (convex hull, general)"
+	@echo "  • Multiple algorithms (brute force, divide & conquer)"
+	@echo "  • Statistical analysis and performance comparison"
+	@echo "  • Automatic visualization and result export"
+	@echo "  • All functionality in a single main.py file"

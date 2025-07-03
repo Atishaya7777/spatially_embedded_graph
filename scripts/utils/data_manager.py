@@ -2,11 +2,11 @@ import json
 import pickle
 import os
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 import logging
 
 from core.point import Point
-from analysis.statistical_analyzer import ExperimentResult
+from analysis.statistical_analyzer import ExperimentResult, MultiAlgorithmExperiment
 
 
 class DataManager:
@@ -240,3 +240,65 @@ class DataManager:
 
         self.logger.info(f"Exported summary to CSV: {csv_file}")
         return csv_file
+
+    def save_multi_algorithm_results(self, experiments: List[MultiAlgorithmExperiment],
+                                   experiment_name: str = "multi_algorithm_experiment") -> tuple[str, str]:
+        """Save multi-algorithm experiment results to JSON and pickle files."""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Prepare JSON-serializable data
+        json_data = [exp.to_dict() for exp in experiments]
+
+        # Save as JSON
+        json_file = os.path.join(
+            self.output_dir, f"{experiment_name}_{timestamp}.json")
+        with open(json_file, 'w') as f:
+            json.dump(json_data, f, indent=2)
+
+        # Save as pickle (preserves exact Python objects)
+        pickle_file = os.path.join(
+            self.output_dir, f"{experiment_name}_{timestamp}.pkl")
+        with open(pickle_file, 'wb') as f:
+            pickle.dump(experiments, f)
+
+        self.logger.info(f"Saved {len(experiments)} experiments to:")
+        self.logger.info(f"  JSON: {json_file}")
+        self.logger.info(f"  Pickle: {pickle_file}")
+
+        return json_file, pickle_file
+
+    def save_study_results(self, study_results: 'StudyResults', filename: str) -> str:
+        """Save StudyResults to JSON file."""
+        from analysis.statistical_analyzer import StudyResults
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Prepare JSON-serializable data
+        json_data = {
+            'experiments': [exp.to_dict() for exp in study_results.experiments],
+            'statistics': {
+                name: {
+                    'algorithm_name': stats.algorithm_name,
+                    'num_experiments': stats.num_experiments,
+                    'wiener_index_mean': stats.wiener_index_mean,
+                    'wiener_index_std': stats.wiener_index_std,
+                    'wiener_index_min': stats.wiener_index_min,
+                    'wiener_index_max': stats.wiener_index_max,
+                    'execution_time_mean': stats.execution_time_mean,
+                    'execution_time_std': stats.execution_time_std,
+                    'execution_time_min': stats.execution_time_min,
+                    'execution_time_max': stats.execution_time_max
+                } for name, stats in study_results.statistics.items()
+            }
+        }
+        
+        # Save JSON
+        if not filename.endswith('.json'):
+            filename = filename.replace('.json', '') + '.json'
+        
+        json_file = os.path.join(self.output_dir, filename)
+        with open(json_file, 'w') as f:
+            json.dump(json_data, f, indent=2)
+        
+        self.logger.info(f"Study results saved to: {json_file}")
+        return json_file

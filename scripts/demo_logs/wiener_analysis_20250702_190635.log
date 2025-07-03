@@ -1,0 +1,143 @@
+2025-07-02 19:06:35,992 - INFO - Logging initialized. Log file: demo_logs/wiener_analysis_20250702_190635.log
+2025-07-02 19:06:35,992 - INFO - Starting modular architecture demo
+2025-07-02 19:06:35,992 - INFO - Logging initialized. Log file: wiener_analysis_logs/wiener_analysis_20250702_190635.log
+2025-07-02 19:06:35,993 - INFO - WienerAnalysisOrchestrator initialized
+2025-07-02 19:06:35,993 - INFO - Starting experiment: n=7, type=convex, seed=42
+2025-07-02 19:06:35,993 - INFO - Evaluating 5,040 permutations using 8 workers...
+2025-07-02 19:06:36,583 - INFO - Parallel brute force completed in 0.59 seconds
+2025-07-02 19:06:36,583 - INFO - Algorithm brute_force: Wiener=210.6190, Time=0.5899s
+2025-07-02 19:06:36,583 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:37,498 - INFO - Parallel brute force completed in 0.91 seconds
+2025-07-02 19:06:37,499 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:06:38,247 - INFO - Parallel brute force completed in 0.75 seconds
+2025-07-02 19:06:38,248 - INFO - Algorithm divide_conquer: Wiener=210.6190, Time=1.6647s
+2025-07-02 19:06:38,248 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:39,083 - INFO - Parallel brute force completed in 0.83 seconds
+2025-07-02 19:06:39,083 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:39,925 - INFO - Parallel brute force completed in 0.84 seconds
+2025-07-02 19:06:39,926 - INFO - Evaluating 720 permutations using 8 workers...
+2025-07-02 19:06:40,801 - INFO - Parallel brute force completed in 0.87 seconds
+2025-07-02 19:06:43,293 - INFO - Logging initialized. Log file: wiener_analysis_logs/wiener_analysis_20250702_190643.log
+2025-07-02 19:06:43,293 - INFO - WienerAnalysisOrchestrator initialized
+2025-07-02 19:06:43,293 - INFO - Starting comparison study: sizes=[5, 6, 7], trials=3
+2025-07-02 19:06:43,293 - INFO - Running experiments for n=5
+2025-07-02 19:06:43,293 - INFO - Starting experiment: n=5, type=convex, seed=0
+2025-07-02 19:06:43,293 - INFO - Evaluating 120 permutations using 8 workers...
+2025-07-02 19:06:44,187 - INFO - Parallel brute force completed in 0.89 seconds
+2025-07-02 19:06:44,188 - INFO - Algorithm brute_force: Wiener=42.1579, Time=0.8943s
+2025-07-02 19:06:44,188 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:44,997 - INFO - Parallel brute force completed in 0.81 seconds
+2025-07-02 19:06:44,997 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:06:45,902 - INFO - Parallel brute force completed in 0.90 seconds
+2025-07-02 19:06:45,903 - INFO - Algorithm divide_conquer: Wiener=43.2094, Time=1.7158s
+2025-07-02 19:06:45,904 - INFO - Starting experiment: n=5, type=convex, seed=1
+2025-07-02 19:06:45,904 - INFO - Evaluating 120 permutations using 8 workers...
+2025-07-02 19:06:46,755 - INFO - Parallel brute force completed in 0.85 seconds
+2025-07-02 19:06:46,756 - INFO - Algorithm brute_force: Wiener=64.5339, Time=0.8519s
+2025-07-02 19:06:46,756 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:47,598 - INFO - Parallel brute force completed in 0.84 seconds
+2025-07-02 19:06:47,599 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:06:48,456 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:06:48,456 - INFO - Algorithm divide_conquer: Wiener=64.5339, Time=1.7005s
+2025-07-02 19:06:48,456 - INFO - Starting experiment: n=5, type=convex, seed=2
+2025-07-02 19:06:48,457 - INFO - Evaluating 120 permutations using 8 workers...
+2025-07-02 19:06:49,256 - INFO - Parallel brute force completed in 0.80 seconds
+2025-07-02 19:06:49,257 - INFO - Algorithm brute_force: Wiener=48.7051, Time=0.8003s
+2025-07-02 19:06:49,257 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:06:50,169 - INFO - Parallel brute force completed in 0.91 seconds
+2025-07-02 19:06:50,170 - INFO - Algorithm divide_conquer: Wiener=48.8299, Time=0.9130s
+2025-07-02 19:06:50,170 - INFO - Running experiments for n=6
+2025-07-02 19:06:50,170 - INFO - Starting experiment: n=6, type=convex, seed=0
+2025-07-02 19:06:50,171 - INFO - Evaluating 720 permutations using 8 workers...
+2025-07-02 19:06:51,026 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:06:51,027 - INFO - Algorithm brute_force: Wiener=73.7963, Time=0.8563s
+2025-07-02 19:06:51,027 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:52,081 - INFO - Parallel brute force completed in 1.05 seconds
+2025-07-02 19:06:52,082 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:06:53,028 - INFO - Parallel brute force completed in 0.95 seconds
+2025-07-02 19:06:53,029 - INFO - Algorithm divide_conquer: Wiener=73.7963, Time=2.0019s
+2025-07-02 19:06:53,029 - INFO - Starting experiment: n=6, type=convex, seed=1
+2025-07-02 19:06:53,029 - INFO - Evaluating 720 permutations using 8 workers...
+2025-07-02 19:06:53,901 - INFO - Parallel brute force completed in 0.87 seconds
+2025-07-02 19:06:53,902 - INFO - Algorithm brute_force: Wiener=103.8994, Time=0.8726s
+2025-07-02 19:06:53,902 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:54,740 - INFO - Parallel brute force completed in 0.84 seconds
+2025-07-02 19:06:54,741 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:55,562 - INFO - Parallel brute force completed in 0.82 seconds
+2025-07-02 19:06:55,563 - INFO - Algorithm divide_conquer: Wiener=110.4895, Time=1.6609s
+2025-07-02 19:06:55,563 - INFO - Starting experiment: n=6, type=convex, seed=2
+2025-07-02 19:06:55,563 - INFO - Evaluating 720 permutations using 8 workers...
+2025-07-02 19:06:56,427 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:06:56,428 - INFO - Algorithm brute_force: Wiener=74.8326, Time=0.8642s
+2025-07-02 19:06:56,428 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:06:57,281 - INFO - Parallel brute force completed in 0.85 seconds
+2025-07-02 19:06:57,282 - INFO - Algorithm divide_conquer: Wiener=74.8326, Time=0.8538s
+2025-07-02 19:06:57,282 - INFO - Running experiments for n=7
+2025-07-02 19:06:57,282 - INFO - Starting experiment: n=7, type=convex, seed=0
+2025-07-02 19:06:57,282 - INFO - Evaluating 5,040 permutations using 8 workers...
+2025-07-02 19:06:58,164 - INFO - Parallel brute force completed in 0.88 seconds
+2025-07-02 19:06:58,165 - INFO - Algorithm brute_force: Wiener=142.6366, Time=0.8831s
+2025-07-02 19:06:58,165 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:06:58,997 - INFO - Parallel brute force completed in 0.83 seconds
+2025-07-02 19:06:58,997 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:06:59,780 - INFO - Parallel brute force completed in 0.78 seconds
+2025-07-02 19:06:59,781 - INFO - Algorithm divide_conquer: Wiener=142.6366, Time=1.6160s
+2025-07-02 19:06:59,781 - INFO - Starting experiment: n=7, type=convex, seed=1
+2025-07-02 19:06:59,782 - INFO - Evaluating 5,040 permutations using 8 workers...
+2025-07-02 19:07:00,630 - INFO - Parallel brute force completed in 0.85 seconds
+2025-07-02 19:07:00,631 - INFO - Algorithm brute_force: Wiener=149.1035, Time=0.8492s
+2025-07-02 19:07:00,631 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:07:01,498 - INFO - Parallel brute force completed in 0.87 seconds
+2025-07-02 19:07:01,499 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:07:02,321 - INFO - Parallel brute force completed in 0.82 seconds
+2025-07-02 19:07:02,322 - INFO - Algorithm divide_conquer: Wiener=155.9507, Time=1.6912s
+2025-07-02 19:07:02,322 - INFO - Starting experiment: n=7, type=convex, seed=2
+2025-07-02 19:07:02,323 - INFO - Evaluating 5,040 permutations using 8 workers...
+2025-07-02 19:07:03,306 - INFO - Parallel brute force completed in 0.98 seconds
+2025-07-02 19:07:03,307 - INFO - Algorithm brute_force: Wiener=126.6487, Time=0.9840s
+2025-07-02 19:07:03,307 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:07:04,169 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:07:04,170 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:07:05,032 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:07:05,033 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:07:05,905 - INFO - Parallel brute force completed in 0.87 seconds
+2025-07-02 19:07:05,906 - INFO - Algorithm divide_conquer: Wiener=126.6487, Time=2.5996s
+2025-07-02 19:07:05,908 - INFO - Logging initialized. Log file: wiener_analysis_logs/wiener_analysis_20250702_190705.log
+2025-07-02 19:07:05,908 - INFO - WienerAnalysisOrchestrator initialized
+2025-07-02 19:07:05,908 - INFO - Starting comparison study: sizes=[5, 6], trials=2
+2025-07-02 19:07:05,908 - INFO - Running experiments for n=5
+2025-07-02 19:07:05,908 - INFO - Starting experiment: n=5, type=general, seed=0
+2025-07-02 19:07:05,908 - INFO - Evaluating 120 permutations using 8 workers...
+2025-07-02 19:07:06,767 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:07:06,767 - INFO - Algorithm brute_force: Wiener=89.9359, Time=0.8591s
+2025-07-02 19:07:06,768 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:07:07,712 - INFO - Parallel brute force completed in 0.94 seconds
+2025-07-02 19:07:07,713 - INFO - Algorithm divide_conquer: Wiener=90.1673, Time=0.9451s
+2025-07-02 19:07:07,713 - INFO - Starting experiment: n=5, type=general, seed=1
+2025-07-02 19:07:07,713 - INFO - Evaluating 120 permutations using 8 workers...
+2025-07-02 19:07:08,625 - INFO - Parallel brute force completed in 0.91 seconds
+2025-07-02 19:07:08,626 - INFO - Algorithm brute_force: Wiener=92.3246, Time=0.9129s
+2025-07-02 19:07:08,626 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:07:09,500 - INFO - Parallel brute force completed in 0.87 seconds
+2025-07-02 19:07:09,501 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:07:10,357 - INFO - Parallel brute force completed in 0.86 seconds
+2025-07-02 19:07:10,358 - INFO - Algorithm divide_conquer: Wiener=92.3246, Time=1.7316s
+2025-07-02 19:07:10,358 - INFO - Running experiments for n=6
+2025-07-02 19:07:10,358 - INFO - Starting experiment: n=6, type=general, seed=0
+2025-07-02 19:07:10,358 - INFO - Evaluating 720 permutations using 8 workers...
+2025-07-02 19:07:11,243 - INFO - Parallel brute force completed in 0.89 seconds
+2025-07-02 19:07:11,244 - INFO - Algorithm brute_force: Wiener=132.5364, Time=0.8862s
+2025-07-02 19:07:11,244 - INFO - Evaluating 24 permutations using 8 workers...
+2025-07-02 19:07:12,110 - INFO - Parallel brute force completed in 0.87 seconds
+2025-07-02 19:07:12,111 - INFO - Evaluating 2 permutations using 8 workers...
+2025-07-02 19:07:13,006 - INFO - Parallel brute force completed in 0.90 seconds
+2025-07-02 19:07:13,007 - INFO - Algorithm divide_conquer: Wiener=133.6351, Time=1.7625s
+2025-07-02 19:07:13,007 - INFO - Starting experiment: n=6, type=general, seed=1
+2025-07-02 19:07:13,007 - INFO - Evaluating 720 permutations using 8 workers...
+2025-07-02 19:07:13,836 - INFO - Parallel brute force completed in 0.83 seconds
+2025-07-02 19:07:13,837 - INFO - Algorithm brute_force: Wiener=134.8411, Time=0.8297s
+2025-07-02 19:07:13,837 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:07:14,664 - INFO - Parallel brute force completed in 0.83 seconds
+2025-07-02 19:07:14,664 - INFO - Evaluating 6 permutations using 8 workers...
+2025-07-02 19:07:15,479 - INFO - Parallel brute force completed in 0.81 seconds
+2025-07-02 19:07:15,479 - INFO - Algorithm divide_conquer: Wiener=134.8411, Time=1.6424s

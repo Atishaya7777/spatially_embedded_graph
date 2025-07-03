@@ -143,3 +143,17 @@ class PointGenerator:
             points.append(Point(x, y, i))
 
         return points
+
+    def generate_convex_hull_points(self, n: int, seed: Optional[int] = None) -> List[Point]:
+        """
+        Generate n points that form a convex hull configuration.
+        Alias for generate_convex_points for compatibility.
+        """
+        return self.generate_convex_points(n, seed)
+
+    def generate_random_points(self, n: int, seed: Optional[int] = None) -> List[Point]:
+        """
+        Generate n random points in general position.
+        Alias for generate_general_points for compatibility.
+        """
+        return self.generate_general_points(n, seed)
