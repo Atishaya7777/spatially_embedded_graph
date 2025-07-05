@@ -1,0 +1,2 @@
+\beamer@sectionintoc {1}{Geometric Spanning Trees and Hypergraphs that Minimizes the Wiener Index}{2}{0}{1}
+\beamer@sectionintoc {2}{Approximation Algorithm for Hamiltonian Paths}{13}{0}{2}
