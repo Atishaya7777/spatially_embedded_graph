@@ -1,0 +1,142 @@
+\documentclass[11pt]{beamer}
+\usetheme{Madrid}
+\usefonttheme{serif}
+\definecolor{customcolor}{RGB}{52,25,100} 
+\setbeamercolor{structure}{fg=customcolor}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{MnSymbol}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{geometry}
+
+\DeclareMathOperator{\sen}{sen}
+\DeclareMathOperator{\tg}{tg}
+
+\setbeamertemplate{caption}[numbered]
+
+\author[Atishaya Maharjan]{Atishaya Maharjan}
+\title{Geometric Spanning Trees that Minimizes the Wiener Index}
+\newcommand{\email}{maharjaa@umanitoba.ca}
+\setbeamertemplate{navigation symbols}{} 
+\institute[]{University of Manitoba\par Geometric, Approximation, and Distributed Algorithms (GADA) lab} 
+\date{\today} 
+
+\bibliographystyle{apalike}
+
+\begin{document}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{This week}
+	This week, I aimed to do the following:
+	\begin{itemize}
+		\item Read through the proof on the constant time approximation algorithm for the hamiltonian path and see if it already solves my problem.
+		      \pause
+		\item Run through and understand the NP-Hardness proof given for the Euclidean Minimum Spanning Tree in general positions with a wiener index and weight bound.
+		      \pause
+		\item Think about open problems relating to the Wiener index.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Constant time approximation algorithm for hamiltonian path minimizing the wiener index}
+	\begin{definition}[k-spider]
+		A \textbf{k-spider} is a tree with all vertices except the \textit{center} having degrees 1 or 2.
+	\end{definition}
+
+	\begin{definition}[k-repairman problem]
+		Given:
+		\begin{itemize}
+			\item A metric space $(V, d)$ where $V$ is the set of points and $d$ is the distance function satisfying the triangle inequality.
+			\item A positive integer $k$, representing the number of repairmen.
+			\item The goal is to serve all clients using $k$ paths (one for each repairman), where each path starts from a designated origin or root.
+		\end{itemize}
+	\end{definition}
+\end{frame}
+
+\begin{frame}{Constant time approximation algorithm for hamiltonian path minimizing the wiener index}
+	\begin{definition}[k-repairman problem (Contd)]
+		Let $P_1, P_2, \dots, P_k$ be the paths assigned to the $k$ repairmen, and each client is visited exactly once (by one path), then:
+		$$\min \dfrac{1}{|V|}\displaystyle\sum_{v\in V}t(v)$$
+		where $t(v)$ is the arrival time of the node $v$ on the path it appears in.
+	\end{definition}
+
+	\begin{theorem}[Theorem 2.5 \cite{proceeding:approx_alg_for_min_avg_distortion}]
+		Givem a $\gamma$-approximation for the minimum k-repairmen problem on a metric $d$, we can obtain a $2\gamma$-approximation for embedding the metric $d$ into a $k$-spider in a non-contracting fashion to minimize the average distortion.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}{Constant time approximation algorithm for hamiltonian path minimizing the wiener index}
+	\begin{itemize}
+		\item \cite{proceeding:approx_alg_for_min_avg_distortion} showed that embedding a metric into a line (So the sum of pairwise distances in the line - The Wiener index of the path is minimized) can be approximated via the k-TRP.
+		\item Moreover, \cite{article:poly_time_approx_for_trp} gave a PTAS $(1 + \varepsilon)$-approximation for the Euclidean k-TRP (and for planar graphs). Plugging $\gamma = 1 + \varepsilon$ provides a $2 + \mathcal{O}(\varepsilon)$ approximation factor.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Weak vs Strong NP-Hardness reductions}
+	We begin with two related problems:
+	\begin{definition}[2-PARTITION]
+		Given $n$ integers $A = \{a_1, a_2, \dots, a_n\}$, partition them into two groups $A_1$ and $A_2$, where $A_1 \cupdot A_2 = A$ such that $\displaystyle\sum_{i \in A_1}i = \displaystyle\sum_{j \in A_2}j = \dfrac{1}{2}\displaystyle\sum_{a \in A}a = t$.
+	\end{definition}
+
+	\begin{definition}[3-PARTITION]
+		Given $n$ integers $A = \{a_1, a_2, \dots, a_n\}$ and no target sum, parition them into $\dfrac{n}{3}$ sets $A_1 \cupdot A_2 \cupdot \dots \cupdot A_{\frac{n}{3}} = A$ of equal sum: $\displaystyle\sum A_i = \dfrac{\displaystyle\sum A}{n/3} = t$. We will assume $3\;|\;n$; otherwise the answer is no.
+	\end{definition}
+\end{frame}
+
+\begin{frame}{Weak vs Strong NP-Hardness reductions}
+	\begin{itemize}
+		\item Weakly NP-hard: NP-hard ``in the intended way''. Usually, we think of NP-hardness in terms of how hard your problem is, in terms of the encoding size $(n)$ of your input. Thus, we allow numbers to have exponential value because even when a value is exponential, the encoding of the value is polynomial (Read in binary: $\log_2(\text{number} = 2^{n^c}) = n^c$, which is polynomial). Polynomial number of bits is in some sense a reasonable encoding.
+
+		\item Strongly NP-hard: NP-hard even when problem is restricted to numbers of polynomial value (With respect to n, the number of numbers).
+	\end{itemize}
+
+	\vspace{0.5em}
+	Key: \textbf{2-PARTITION} is Weakly NP-hard while \textbf{3-PARTITION} is Strongly NP-hard.
+\end{frame}
+
+\begin{frame}{NP-Hardness reduction}
+	\begin{definition}[Euclidean Wiener Index Tree Problem (EWITP)]
+		Given a set $P$ of points in the Euclidean plane, a cost $W$, and a budget $B$, decide whether there exists a spanning tree $T$ of $P$, such tghat $W(T) \leq W$ and $wt(T) \leq B$.
+	\end{definition}
+
+	\begin{theorem}[Theorem 3 \cite{article:geometric_spanning_trees_minimizing_wiener_index}]
+		The EWITP is weakly NP-hard since they reduced it from \textbf{2-PARTITION}.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}{Open problems from the geometric spanning tree paper}
+	\begin{itemize}
+		\item Improve the running time of $\mathcal{O}(n^4)$ algorithm that constructs a spanning tree of minimum Wiener index when the points of $P$ are in convex position.
+
+		\item Is the problem of computing a spanning tree of minimum Wiener index for a set $P$ of $n$ points in general position NP-hard? The paper considered the variant where the total weight of the tree is bounded. If the total weight of the tree is unbounded, is it still NP-hard?
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Next week tasks!}
+	\begin{itemize}
+		\item Read and understand the hardness reduction and understand why the bounding the weight of the tree is necessary.
+		\item Think about either an efficient algorithm or a hardness reduction for the spanning tree minimizing the Wiener Index in general position.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+	\bibliography{references}
+\end{frame}
+
+\begin{frame}
+	\begin{center}
+		The end.
+
+		\email
+	\end{center}
+\end{frame}
+
+\end{document}

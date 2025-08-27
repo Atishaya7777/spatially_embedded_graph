@@ -1,0 +1,227 @@
+\documentclass[11pt]{beamer}
+\usetheme{Madrid}
+\usefonttheme{serif}
+\definecolor{customcolor}{RGB}{52,25,100} 
+\setbeamercolor{structure}{fg=customcolor}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{geometry}
+
+\DeclareMathOperator{\sen}{sen}
+\DeclareMathOperator{\tg}{tg}
+
+\setbeamertemplate{caption}[numbered]
+
+\author[Atishaya Maharjan]{Atishaya Maharjan}
+\title{Geometric Spanning Trees and Hypergraphs that Minimizes the Wiener Index}
+\newcommand{\email}{maharjaa@umanitoba.ca}
+\setbeamertemplate{navigation symbols}{} 
+\institute[]{University of Manitoba\par Geometric, Approximation, and Distributed Algorithms (GADA) lab} 
+\date{\today} 
+
+\bibliographystyle{apalike}
+
+\begin{document}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{This week}
+	This week, I aimed to do the following:
+	\begin{itemize}
+		\item Rigorously analyze and obtain the worst case of the divide and conquer algorithm for approximating Hamiltonian paths.
+		      \pause
+		\item Refactor and decouple the algorithm that generates the tests and publish it on GitHub.
+		      \pause
+		\item Think about a simplified version of the Happy Edge Conjecture (NCST) [More on this later].
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Divide and Conquer Algorithm for Approximating Hamiltonian Paths}
+	\begin{algorithm}[H]
+		\caption{DivideAndConquerWiener($P$)}
+		\begin{algorithmic}[1]
+			\Procedure{DivideAndConquerWiener}{$P$, $depth = 0$, $maxDepth = 10$}
+			\If{$|P| \leq 4$ or $depth > maxDepth$}
+			\State \Return \Call{BruteForceHamiltonianPath}{$P$}
+			\EndIf
+			\State $(a, b, c) \gets$ \Call{FindBisectingLine}{$P$}
+			\State $(P_L, P_R) \gets$ \Call{PartitionPoints}{$P$, $a$, $b$, $c$}
+			\State $\pi_L \gets$ \Call{DivideAndConquerWiener}{$P_L$, $depth+1$}
+			\State $\pi_R \gets$ \Call{DivideAndConquerWiener}{$P_R$, $depth+1$}
+			\State \Return \Call{ConnectPaths}{$\pi_L$, $\pi_R$}
+			\EndProcedure
+		\end{algorithmic}
+	\end{algorithm}
+\end{frame}
+
+\begin{frame}{Supporting Procedure: FindBisectingLine}
+	\begin{algorithm}[H]
+		\caption{FindBisectingLine($P$)}
+		\begin{algorithmic}[1]
+			\Procedure{FindBisectingLine}{$P$}
+			\State $minX \gets \min_{p \in P} p.x$, $maxX \gets \max_{p \in P} p.x$
+			\State $minY \gets \min_{p \in P} p.y$, $maxY \gets \max_{p \in P} p.y$
+			\State $width \gets maxX - minX$, $height \gets maxY - minY$
+			\If{$width \geq height$}
+			\State $midX \gets (minX + maxX)/2$
+			\State \Return $(1.0, 0.0, -midX)$ \Comment{Vertical line: $x = midX$}
+			\Else
+			\State $midY \gets (minY + maxY)/2$
+			\State \Return $(0.0, 1.0, -midY)$ \Comment{Horizontal line: $y = midY$}
+			\EndIf
+			\EndProcedure
+		\end{algorithmic}
+	\end{algorithm}
+\end{frame}
+
+\begin{frame}{Supporting Procedure: PartitionPoints}
+	\begin{algorithm}[H]
+		\caption{PartitionPoints($P$, $a$, $b$, $c$)}
+		\begin{algorithmic}[1]
+			\Procedure{PartitionPoints}{$P$, $a$, $b$, $c$}
+			\State $L \gets [\ ]$, $R \gets [\ ]$
+			\For{each $p \in P$}
+			\State $v \gets ap.x + bp.y + c$
+			\If{$v \leq 0$}
+			\State $L \gets L \cup \{p\}$
+			\Else
+			\State $R \gets R \cup \{p\}$
+			\EndIf
+			\EndFor
+			\If{$L = \emptyset$}
+			\State Move one point from $R$ to $L$
+			\ElsIf{$R = \emptyset$}
+			\State Move one point from $L$ to $R$
+			\EndIf
+			\State \Return $(L, R)$
+			\EndProcedure
+		\end{algorithmic}
+	\end{algorithm}
+\end{frame}
+
+\begin{frame}{Supporting Procedure: ConnectPaths}
+	\begin{algorithm}[H]
+		\caption{ConnectPaths($\pi_1$, $\pi_2$)}
+		\begin{algorithmic}[1]
+			\Procedure{ConnectPaths}{$\pi_1$, $\pi_2$}
+			\State $options \gets$ empty list
+			\State Append $(\pi_1 + \pi_2, W(\pi_1 + \pi_2))$ to $options$
+			\State Append $(\pi_1 + \text{reverse}(\pi_2), W(\pi_1 + \text{reverse}(\pi_2)))$ to $options$
+			\State Append $(\text{reverse}(\pi_1) + \pi_2, W(\text{reverse}(\pi_1) + \pi_2))$ to $options$
+			\State Append $(\text{reverse}(\pi_1) + \text{reverse}(\pi_2), W(\text{reverse}(\pi_1) + \text{reverse}(\pi_2)))$ to $options$
+			\State \Return path with minimum Wiener index from $options$
+			\EndProcedure
+		\end{algorithmic}
+	\end{algorithm}
+\end{frame}
+
+
+\begin{frame}{Worst case?? Approximation Ratio???}
+	\begin{itemize}
+		\item When experimenting with different configurations, I realized that drawing the configuration trees helped.
+		      \pause
+		\item Also, it always seemed that the algorithm was struggling for certain configuration trees. Specifically, it struggled at the merge step of reconciling a node with each sibling node if two close points did not share the same parent.
+	\end{itemize}
+
+	\vspace{0.5cm}
+
+	\pause
+	\begin{center}
+		Chalk \& Talk
+	\end{center}
+\end{frame}
+
+\begin{frame}{How do we fix this?}
+	\begin{itemize}
+		\item The problem is due to the fact that there may be cases where the algorithm merges two points that are not close to each other, which results in a longer path or having to go through the same edges.
+		      \pause
+		      \vspace{0.5cm}
+		\item We cannot fix this by simply adding a condition to check if the points are close to each other, as this would violate the divide and conquer principle of no overlapping subproblems.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Proposed fix!}
+	\begin{block}{Revamp: Need to reconsider the merge step. How?}
+		For each edge in $\pi_R$ and $\pi_L$ at the $i$th step:
+		\begin{enumerate}
+			\item Pick the closest edge between the two paths $\pi_L$ and $\pi_R$. (How?)
+			      \pause
+			\item For each edge in $\pi_L$ and $\pi_R$, check if moving the edge to join the head and tail of the path then merging the two paths results in a shorter Wiener index.
+			      \pause
+			\item Pick the smallest Wiener index from the options.
+		\end{enumerate}
+	\end{block}
+	\pause
+	In total, we have $O(n^2)$ options to check, where $n$ is the number of points in the configuration. So this bumps up the time complexity of the Divide and Conquer algorithm to $O(n^2 \log n)$.
+
+	\pause
+	I haven't fully analyzed the approximation ratio if we use this approach, but intuitively, it should be better.
+\end{frame}
+
+\begin{frame}{Interlude: NCSTs \& The Happy Edge Conjecture}
+	\begin{block}{The Happy Edge Conjecture}
+		Given two trees $T_I$ and $T_F$ embedded on the same vertex set and let $\mathcal{O}$ denote the optimal set of reconfiguration sequences from $T_I$ to $T_F$. Then, for each edge $e \in T_I \cap T_F$, we have that $e \not\in \mathcal{O}$.
+	\end{block}
+
+	\pause
+	\begin{itemize}
+		\item We know that the Happy Edge Conjecture is true for trees with at all of their happy edges being boundary edges.
+		      \pause
+		\item Connor and I met up with Dr. Zhu on Thursday to see where GADA lab's proof of the Happy Edge Conjecture fails.
+		      \pause
+		\item The GADA lab's proof is of the following flavour:
+		      \begin{enumerate}
+			      \item Base case: Happy Edge Conjecture is true for edges in the convex hull (Boundary edges).
+			      \item Inductive step: Pick an interior happy edge and split the point set into two non-intersecting convex sets. Then, the interior edge is now a boundary edge.
+			      \item Rinse and Repeat.
+		      \end{enumerate}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{The Happy Edge Conjecture (Contd.)}
+	The problem crops up in the merging step between the distinct convex sets. The GADA lab's proof assumes that the two convex sets are disjoint, but this is unproven. In general, it is sufficient to prove the following:
+
+	\begin{block}{Simplified Happy Edge Conjecture}
+		Suppose every optimal flip sequence $\mathcal{O}$ from $T_I$ to $T_F$ flips at least one happy edge. Now, consider all $\sigma \subseteq \mathcal{F} \in \mathcal{O}$ that begins by flipping a happy edge $e$. Then, there exists a $\sigma'$ such that $|\sigma'| < \sigma$ where $e \not\in \sigma'$.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Simplified case of the Happy Edge Conjecture (Contd.)}
+	To start, we begin by analyzing the case where the removing the happy edge $e$ creates two disjoint components $C_1$ and $C_2$ such that WLOG $|C_1| = 1$.
+
+	\begin{center}
+		Chalk \& Talk
+	\end{center}
+\end{frame}
+
+\begin{frame}{Next week tasks!}
+	\begin{itemize}
+		\item Implement the proposed fix to the divide and conquer algorithm and analyze the approximation ratio.
+		\item Continue working on the Happy Edge Conjecture and try to prove the simplified version.
+		\item Think of a way to bound the base case (Connecting two points) of the divide and conquer algorithm to the actual optimal solution. Currently, the analysis does not make any sense.
+	\end{itemize}
+\end{frame}
+
+% \begin{frame}[allowframebreaks]{References}
+% 	\bibliography{references}
+% \end{frame}
+
+\begin{frame}
+	\begin{center}
+		The end.
+
+		\email
+	\end{center}
+\end{frame}
+
+\end{document}
+

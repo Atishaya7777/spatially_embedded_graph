@@ -1,0 +1,17 @@
+\begin{thebibliography}{}
+
+\bibitem[Abu-Affash et~al., 2023]{article:geometric_spanning_trees_minimizing_wiener_index}
+Abu-Affash, A.~K., Carmi, P., Luwisch, O., and Mitchell, J. S.~B. (2023).
+\newblock Geometric spanning trees minimizing the wiener index.
+
+\bibitem[Dhamdhere et~al., 2004]{proceeding:approx_alg_for_min_avg_distortion}
+Dhamdhere, K., Gupta, A., and Ravi, R. (2004).
+\newblock Approximation algorithms for minimizing average distortion.
+\newblock In Diekert, V. and Habib, M., editors, {\em STACS 2004}, pages 234--245, Berlin, Heidelberg. Springer Berlin Heidelberg.
+
+\bibitem[Sitters, 2021]{article:poly_time_approx_for_trp}
+Sitters, R. (2021).
+\newblock Polynomial time approximation schemes for the traveling repairman and other minimum latency problems.
+\newblock {\em SIAM Journal on Computing}, 50(5):1580--1602.
+
+\end{thebibliography}

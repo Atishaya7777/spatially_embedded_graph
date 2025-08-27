@@ -75,116 +75,107 @@ Abuaffash et al. \cite{abuaffash_2023_geom_min_spanning_tree_wiener_index} showe
 
 We tackle the problem of computing the Wiener index for points in general position as well as give an approximation algorithm for the problem of computing the hamiltonian path of $P$ that minimizes the Wiener index.
 
-\subsection{Constructing a spanning tree of $P$ in general position that minimizes the Wiener index}
+\section{Hardness reduction}
+In \emph{Geometric Spanning Trees Minimizing the Wiener Index} (A. Karim Abu-Affash), one of the listed open questions is:
 
-\subsection{An approximation algorithm for the Hamiltonian path of $P$ that minimizes the Wiener index}
+\begin{quote}
+	Another challenging open question is to determine the complexity of computing a spanning tree of minimum Wiener index for a set $P$ of $n$ points in general position: Is this problem NP-hard? In this paper, we considered a variant of this problem when the total weight of the tree is bounded, and we proved that this variant is NP-hard.
+\end{quote}
 
-We use Euclidean Minimum Spanning trees to show a lower bound on the Wiener index of a Hamiltonian path of $P$ that minimizes the Wiener index.
+We are interested in the unconstrained Euclidean version (no bound on total weight). The conjecture is that it is NP-hard.
 
-The big idea:
-\begin{enumerate}
-	\item The EMST seems like a good heuristic/approximation for the Wiener index.
-	\item Generate the EMST using Kruskal's or Prim's algorithm.
-	\item Double the edges of the EMST to create an Eulerian circuit.
-	\item Use the Eulerian circuit to create a Hamiltonian path by performing a depth-first traversal of the circuit.
-\end{enumerate}
+\subsection{Identity for Wiener Index of a Tree}
 
-That's a classic TSP 2-approximation via MST. We could probably use the same structure but analyze it for Wiener index instead of total path length.
+Let $T=(P,E)$ be a tree on $n=|P|$ vertices with edge lengths $\ell:E\to \mathbb{R}_{>0}$. For an edge $e\in E$, let $s_e$ be the size of one of the two components obtained by removing $e$ (the product $s_e(n-s_e)$ is symmetric, so the choice does not matter).
 
-Question:
-\begin{enumerate}
-	\item Can we show some kind of bound of total bound length VS Wiener index?
-	\item Can we show that the total path length of the MST is at most some factor larger than the Wiener index of the optimal Hamiltonian path?
-\end{enumerate}
-
-\textbf{Steps to be taken:}
-\begin{itemize}
-	\item Define $P_{MST}$: The Hamiltonian path derived from the Euclidean Minimum Spanning Tree of $P$.
-	\item Let $H^*$ be the optimal Wiener-Minimal Hamiltonian path.
-	\item Show that the Wiener index of $P_{MST}$ is at most a $\alpha$ factor larger than the Wiener index of $H^*$. Ideally, $\alpha$ is logarithmic or constant.
-	\item Use the triangle inequality and Euclidean metric properties to relate path distance and the Euclidean distance.
-	\item Bound how much "detour" the path introduces in terms of total pairwise distance.
-	\item Verify experimentally that the approximation holds for various point distributions. (TBD ?)
-\end{itemize}
-
-
-\subsection*{Algorithm}
-
-Given a set of points \(P = \{p_1, p_2, \dots, p_n\}\) in the Euclidean plane:
-
-\begin{enumerate}
-	\item Compute the Euclidean Minimum Spanning Tree (EMST) \(T\) of the points \(P\) using Kruskal's or Prim's algorithm.
-	\item Perform a Depth-First Search (DFS) traversal on \(T\), starting from an arbitrary root vertex \(r \in P\), recording the order in which vertices are first visited.
-	\item Construct a Hamiltonian path \(H\) by listing the vertices in the order they are first encountered during the DFS traversal, skipping any repeated vertices (i.e., shortcutting repeated visits).
-\end{enumerate}
-
-\subsection*{Constructing a Hamiltonian path from a Wiener-Minimal Spanning Tree}
-
-Given $P \subseteq \mathbb{R}^2$ be a set of $n$ points. Let $T$ be a Wiener-Minimal Spanning Tree of $P$. Let $H$ be the Hamiltonian path constructed from $T$ by performing a preorder DFS traversal on $T$.
-
-Let $W(T)$ be the Wiener index of the tree $T$ and $W(H)$ be the Wiener index of the Hamiltonian path $H$.
-
-\begin{theorem}
-	Let $T$ be a spanning tree on a set of $n$ points $P$, and let $H$ be a Hamiltonian path obtained by performing a depth-first traversal of $T$ and shortcutting repeated visits. Then:
+\begin{theorem}[Edge Decomposition Formula]
 	\[
-		W(H) \leq (n - 1) \cdot W(T)
+		\mathrm{WI}(T) \;=\; \sum_{\{u,v\}\subseteq P}\mathrm{dist}_T(u,v)
+		\;=\; \sum_{e\in E}\ell(e)\,s_e\,(n-s_e).
 	\]
 \end{theorem}
 
 \begin{proof}
-	Let $d_T(u, v)$ denote the tree distance between vertices $u$ and $v$, i.e., the length of the unique path connecting $u$ and $v$ in $T$. Let $d_H(u, v)$ denote the path distance between $u$ and $v$ along the Hamiltonian path $H$.
-
-	We begin by noting that the Wiener index of any graph $G$ is defined as:
+	For each edge $e\in E$ and unordered pair $\{u,v\}\subseteq P$, define
 	\[
-		W(G) = \sum_{\{u,v\} \subseteq P} d_G(u,v)
+		I_e(u,v) =
+		\begin{cases}
+			1, & \text{if $e$ lies on the unique $u$--$v$ path in $T$,} \\
+			0, & \text{otherwise.}
+		\end{cases}
 	\]
-	Hence, we want to bound:
+	Then
 	\[
-		W(H) = \sum_{\{u,v\}} d_H(u,v)
+		\mathrm{dist}_T(u,v) = \sum_{e\in E}\ell(e)\,I_e(u,v).
 	\]
-	in terms of $W(T) = \sum_{\{u,v\}} d_T(u,v)$.
-
-	The Hamiltonian path $H$ is constructed by performing a DFS traversal of $T$ and shortcutting repeated visits (i.e., only recording the first occurrence of each vertex). The DFS traversal of a tree visits each edge twice (once when descending, once when backtracking), and thus its total traversal length is exactly:
+	Summing over all unordered pairs and exchanging summations,
 	\[
-		L_{\text{DFS}} = 2 \cdot \text{weight}(T)
+		\sum_{\{u,v\}\subseteq P}\mathrm{dist}_T(u,v)
+		= \sum_{e\in E}\ell(e)\sum_{\{u,v\}\subseteq P}I_e(u,v).
 	\]
-
-	Now consider any pair of vertices $u,v \in P$. In the worst case, $u$ and $v$ lie at opposite ends of the Hamiltonian path $H$, and the distance between them in $H$ is the sum of up to $n-1$ edges (That is, the diameter of the tree). Since the Hamiltonian path visits each vertex exactly once, we have:
+	When $e$ is removed, the tree splits into two components of sizes $s_e$ and $n-s_e$. A pair $\{u,v\}$ uses $e$ iff $u$ and $v$ lie in different components. There are exactly $s_e(n-s_e)$ such pairs. Thus
 	\[
-		d_H(u,v) \leq diam(T) \cdot \max_{e \in T} w(e)
+		\sum_{\{u,v\}\subseteq P}\mathrm{dist}_T(u,v)
+		= \sum_{e\in E}\ell(e)\,s_e\,(n-s_e).
 	\]
-	Meanwhile, in the tree $T$, we have:
-	\[
-		d_T(u,v) \geq \min_{e \in T} w(e)
-	\]
-
-	Since $H$ is a traversal of $T$, any subpath between $u$ and $v$ in $H$ can include at most $n - 1$ edges, while $d_T(u,v)$ includes the minimal number of edges between $u$ and $v$ in $T$.
-
-	In the worst case (such as when $T$ is a star graph), the Hamiltonian path must "walk around" the entire outer ring to connect two leaf nodes. This inflates some distances up to $(n - 1)$ times their tree values:
-	\[
-		d_H(u, v) \leq (n - 1) \cdot d_T(u, v)
-	\]
-	Hence, for each pair $\{u,v\}$, the inflation factor is:
-	\[
-		\alpha_{uv} = \frac{d_H(u, v)}{d_T(u, v)} \leq n - 1
-	\]
-	Applying this uniformly over all $\binom{n}{2}$ unordered pairs gives:
-	\[
-		W(H) = \sum_{\{u,v\}} d_H(u,v) \leq (n - 1) \cdot \sum_{\{u,v\}} d_T(u,v) = (n - 1) \cdot W(T)
-	\]
-
-	Therefore, we obtain the approximation guarantee:
-	\[
-		W(H) \leq (n - 1) \cdot W(T)
-	\]
-	which implies a factor-$O(n)$ approximation for the Wiener index via DFS-induced Hamiltonian paths.
 \end{proof}
 
-\section{Higher dimensional generalization}
+\begin{corollary}[Weighted version]
+	If each vertex $v\in P$ has weight $w(v)\ge 0$, then the \emph{weighted Wiener index}
+	\[
+		\mathrm{WWI}(T) = \sum_{\{u,v\}\subseteq P} w(u)w(v)\,\mathrm{dist}_T(u,v)
+	\]
+	satisfies
+	\[
+		\mathrm{WWI}(T) = \sum_{e\in E}\ell(e)\,W_e\,(W_{\mathrm{tot}}-W_e),
+	\]
+	where $W_e$ is the sum of vertex weights in one component after removing $e$ and $W_{\mathrm{tot}}=\sum_{v\in P}w(v)$.
+\end{corollary}
 
-\section{Hypergraphs and the Wiener index}
+\subsection{Reduction Blueprint for NP-Hardness}
 
-\section{Proving something about Hypertrees (Or other structures) that minimizes the Wiener index}
+We sketch an NP-hardness reduction using the edge-decomposition identity. The goal is to reduce from 3-PARTITION.
+
+\subsubsection{Key Insight}
+The Wiener index of a tree decomposes as
+\[
+	\mathrm{WI}(T) = \sum_{e\in E}\ell(e)\,s_e\,(n-s_e).
+\]
+Thus:
+\begin{itemize}
+	\item Long edges are expensive only if they cut many pairs.
+	\item By embedding points with widely separated scales, we can force a spanning tree to have a prescribed \emph{backbone} with exactly one long edge per large gap.
+\end{itemize}
+
+\subsection{Reduction Sketch (from 3-PARTITION)}
+\begin{itemize}
+	\item \textbf{Backbone:} Place $m+1$ hub points $H_0,\dots,H_m$ along the $x$-axis, with gaps $L_1 \ll L_2 \ll \cdots \ll L_m$ where $L_{k+1} \ge n^4 L_k$ (scale separation).
+	\item \textbf{Item Gadgets:} For each integer $a_i$, create a cluster $C_i$ of $a_i$ points in a tiny ball of radius $\varepsilon$. Clusters are positioned so they can connect cheaply to one of two adjacent hubs, but crossing a large gap is very expensive.
+	\item \textbf{Unique Edge per Gap:} By scale separation, any optimal tree must use exactly one edge per gap (otherwise the extra long edge would dominate the objective).
+	\item \textbf{Lexicographic Minimization:} The Wiener index reduces to
+	      \[
+		      \mathrm{WI}(T) \approx \sum_{k=1}^m L_k\,S_k\,(n-S_k),
+	      \]
+	      where $S_k$ is the number of points to the left of gap $k$. Because $L_{k+1}\gg L_k$, minimizing WI is lexicographic in the sequence $(S_1,\dots,S_m)$.
+	\item \textbf{Bin Packing Interpretation:} The reduction enforces that each gap corresponds to one \emph{bin} which must hold exactly three item clusters. To minimize the Wiener index, each bin must sum to the same target $B$; otherwise $S_k$ deviates, incurring a penalty at scale $L_k$. This encodes 3-PARTITION.
+\end{itemize}
+
+\subsection{Weaker Variant}
+A simpler reduction from PARTITION is possible with only one large gap: minimizing
+\[
+	L \cdot s(n-s)
+\]
+is equivalent to balancing two sides of size $n/2$, directly encoding a partition of item weights.
+
+\section{References}
+
+\begin{itemize}
+	\item A. Karim Abu-Affash, ``Geometric Spanning Trees Minimizing the Wiener Index.''
+	\item I. Gutman, ``The Wiener Index of Trees and Its Generalizations,'' surveys (various).
+	\item A. A. Dobrynin, R. Entringer, I. Gutman, ``Wiener index of trees: Theory and applications,'' \emph{Acta Applicandae Mathematicae}, 66 (2001), 211--249.
+	\item S. Klav\v{z}ar, I. Gutman, ``Wiener number of vertex-weighted graphs and a chemical application,'' \emph{Discrete Applied Mathematics}, 80 (1997), 73--81.
+	\item R. Hammack, W. Imrich, S. Klav\v{z}ar, \emph{Handbook of Product Graphs}, 2nd edition, CRC, 2011.
+\end{itemize}
 
 \section{Conclusion}
 In this paper, we studied whatever that we needed to study :).

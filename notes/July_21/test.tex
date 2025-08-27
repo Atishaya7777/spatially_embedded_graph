@@ -1,0 +1,177 @@
+\documentclass{article}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+\title{Rigorous Analysis: Bounding Box Algorithm Worst-Case Construction}
+\author{}
+\date{}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem*{corollary}{Corollary}
+
+\begin{document}
+
+\maketitle
+
+\section{Recursive Worst-Case Instance}
+
+\begin{definition}[Recursive Point Set]
+Let $n = 2^k$ for some integer $k \geq 1$. We define a point set $P_n \subset \mathbb{R}^2$ recursively as follows:
+\begin{itemize}
+    \item \textbf{Base case:} $P_2 = \{(0,0), (1,0)\}$
+    \item \textbf{Recursive step:} For $n = 2^j$, define:
+    \[
+        P_n = T_L \cup T_R
+    \]
+    where:
+    \begin{align*}
+        T_L &= P_{n/2} \\
+        T_R &= \{(x + D_n, y) : (x,y) \in P_{n/2} \} \\
+        D_n &= 4n
+    \end{align*}
+\end{itemize}
+\end{definition}
+
+\paragraph{Geometric Properties}
+\begin{itemize}
+    \item All points lie along the line $y = 0$
+    \item Total number of points: $|P_n| = n$
+    \item Each recursive cluster $P_{n/2}$ lies in a contiguous horizontal segment of unit height and width $\approx n/2$
+    \item At level $j$, the width of the entire point set is:
+    \[
+        \text{width}(P_n) = D_n + \text{diameter}(P_{n/2}) = \Theta(n)
+    \]
+\end{itemize}
+
+\section{Behavior of the Bounding Box Algorithm}
+
+We analyze the standard bounding box divide-and-conquer heuristic:
+\begin{enumerate}
+    \item Compute the bounding box of the point set
+    \item If width $>$ height, split with a vertical line; otherwise, split horizontally
+    \item Recursively solve left/right (or top/bottom) subproblems
+    \item Connect the two paths by choosing the shortest among the four possible endpoint-to-endpoint connections
+\end{enumerate}
+
+\begin{lemma}[Splitting Direction]
+At every level, the algorithm splits the instance $P_n$ with a vertical line, separating $T_L$ and $T_R$.
+\end{lemma}
+
+\begin{proof}
+Since all points lie on $y = 0$, the bounding box has height $0$ and width $D_n + O(n) = \Theta(n)$. Thus, the algorithm always chooses a vertical split.
+\end{proof}
+
+\begin{lemma}[Length of Connecting Edge]
+The minimum distance between any point in $T_L$ and any point in $T_R$ is exactly $D_n = 4n$.
+\end{lemma}
+
+\begin{proof}
+All $x$-coordinates in $T_L$ lie in $[0, O(n)]$, while all $x$-coordinates in $T_R$ lie in $[4n, 4n + O(n)]$. Therefore, the shortest possible connection spans $D_n = 4n$ units.
+\end{proof}
+
+\section{Cost of the Algorithm's Output}
+
+Let $W_A(n)$ denote the total Wiener index of the path produced by the bounding box algorithm on $P_n$. We define the recurrence:
+\[
+    W_A(n) = 2W_A(n/2) + C(n), \quad W_A(2) = 1
+\]
+where $C(n)$ is the contribution to the Wiener index from the connection between $T_L$ and $T_R$.
+
+\begin{lemma}[Connection Cost]
+\[
+    C(n) = 4n \cdot \left(\frac{n}{2}\right)\left(\frac{n}{2}\right) = n^3
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{itemize}
+    \item The connecting edge has length $4n$
+    \item In the final Hamiltonian path, this edge joins two subpaths of size $n/2$
+    \item Its contribution to the Wiener index is:
+    \[
+        \text{length} \times \text{position weight} = 4n \cdot \frac{n}{2} \cdot \frac{n}{2} = n^3
+    \]
+\end{itemize}
+\end{proof}
+
+\begin{theorem}[Bounding Box Algorithm Cost]
+\[
+    W_A(n) = \Theta(n^3 \log n)
+\]
+\end{theorem}
+
+\begin{proof}
+We have the recurrence:
+\[
+    W_A(n) = 2W_A(n/2) + n^3
+\]
+Apply the Master Theorem:
+\begin{itemize}
+    \item $a = 2$, $b = 2$, $f(n) = n^3$
+    \item $n^{\log_b a} = n$
+    \item Since $f(n) = \omega(n^{\log_b a})$ and the regularity condition holds:
+    \[
+        af(n/b) = 2 \cdot (n/2)^3 = \frac{n^3}{4} < cf(n) \text{ for } c = \frac{1}{2} < 1
+    \]
+\end{itemize}
+The recurrence falls under Case 3 of the Master Theorem. Therefore:
+\[
+    W_A(n) = \Theta(n^3 \log n)
+\]
+\end{proof}
+
+\section{Optimal Solution Analysis}
+
+Let $W^*(n)$ denote the Wiener index of the optimal Hamiltonian path on $P_n$.
+
+\begin{theorem}[Optimal Cost]
+\[
+    W^*(n) = \Theta(n^3)
+\]
+\end{theorem}
+
+\begin{proof}
+Construct the path $\pi^*$ that visits:
+\begin{itemize}
+    \item All points in $T_L$ in increasing $x$-order
+    \item A single jump from the rightmost point in $T_L$ to the leftmost point in $T_R$
+    \item All points in $T_R$ in increasing $x$-order
+\end{itemize}
+\begin{itemize}
+    \item All intra-cluster edges are of length $O(1)$ with total weight $O(n^2)$
+    \item The single inter-cluster edge has length $4n$ and weight $\left(\frac{n}{2}\right)^2$
+\end{itemize}
+Therefore:
+\[
+    W^*(n) = 2 \cdot O(n) \cdot O(n^2) + 4n \cdot \left(\frac{n}{2}\right)^2 = O(n^3) + n^3 = \Theta(n^3)
+\]
+\end{proof}
+
+\section{Approximation Ratio}
+
+\begin{theorem}[Bounding Box Approximation Factor]
+\[
+    \frac{W_A(n)}{W^*(n)} = \Theta(\log n)
+\]
+\end{theorem}
+
+\begin{proof}
+From Theorems 1 and 2:
+\[
+    \frac{W_A(n)}{W^*(n)} = \frac{\Theta(n^3 \log n)}{\Theta(n^3)} = \Theta(\log n)
+\]
+\end{proof}
+
+\begin{corollary}[Unbounded Approximation Ratio]
+The bounding box algorithm does not admit a constant-factor approximation for the Hamiltonian path Wiener index problem in the Euclidean plane.
+\end{corollary}
+
+\end{document}
+
